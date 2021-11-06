@@ -16,6 +16,7 @@ public class Application {
         leonardo.atualizarSalario(salarioReajustado);
 
         System.out.println(leonardo.getSalario());
+        System.out.println(leonardo.getDataUltimoReajuste());
 
     }
 }
