@@ -1,20 +1,29 @@
 package br.com.domain.rh.service;
 
-import br.com.domain.rh.exceptions.ValidacaoException;
 import br.com.domain.rh.model.Funcionario;
+import br.com.domain.rh.service.validate.ValidacaoReajuste;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.List;
 
 public class ReajusteSalarialService {
+    /*
+     * Single Responsibility Principle: criando uma referência da interface.
+     */
+    private List<ValidacaoReajuste> validacoes;
 
-    public BigDecimal reajustarSalario(final Funcionario funcionario, final BigDecimal aumento) {
-        final BigDecimal salario = funcionario.getSalario();
-        final BigDecimal percentualReajuste = aumento.divide(salario, RoundingMode.HALF_UP);
+    public ReajusteSalarialService(final List<ValidacaoReajuste> validacoes) {
+        this.validacoes = validacoes;
+    }
 
-        if (percentualReajuste.compareTo(new BigDecimal("0.4")) > 0) {
-            throw new ValidacaoException("Reajuste nao pode ser superior a 40% do salario!");
-        }
-        return salario.add(aumento);
+    public void reajustarSalario(final Funcionario funcionario, final BigDecimal aumento) {
+        /*
+         * Permitindo que todas as classes que implementam a interface validem as regras.
+         * É possível observar o baixo acoplamento, alta coesão e forte encapsulamento.
+         */
+        validacoes.forEach(v -> v.validar(funcionario, aumento));
+
+        final BigDecimal salarioReajustado = funcionario.getDadosPessoais().getSalario().add(aumento);
+        funcionario.atualizarSalario(salarioReajustado);
     }
 }
