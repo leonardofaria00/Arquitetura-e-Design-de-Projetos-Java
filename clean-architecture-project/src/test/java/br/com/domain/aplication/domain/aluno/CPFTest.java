@@ -1,6 +1,5 @@
-package br.com.domain.aplication.domain;
+package br.com.domain.aplication.domain.aluno;
 
-import br.com.domain.aplication.domain.aluno.CPF;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -3,7 +3,7 @@ package br.com.domain.aplication.domain.aluno;
 import java.util.Objects;
 
 public class CPF {
-    private String numero;
+    private final String numero;
 
     public CPF(final String numero) {
         if (Objects.isNull(numero) || isCPFInvalid(numero)) {
