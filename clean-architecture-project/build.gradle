@@ -1,6 +1,10 @@
 plugins {
     id 'java'
+    id 'jacoco'
 }
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 group 'br.com.domain.aplication'
 version '1.0-SNAPSHOT'
@@ -9,11 +13,59 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('junitVersion', '5.8.1')
+    set('mockitoJunitVersion', '4.0.0')
+    set('cucumberVersion', '7.0.0')
+}
+
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation "io.cucumber:cucumber-core:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
+    testImplementation "org.mockito:mockito-junit-jupiter:${mockitoJunitVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir') as Directory
+}
+
+jacocoTestReport {
+    reports {
+        csv.enabled false
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/jacocoXml")
+        html.enabled true
+        html.destination file("${buildDir}/reports/jacoco/jacocoHtml")
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.95
+            }
+            includes = [
+                    'br.com.domain.aplication.*'
+            ]
+            excludes = [
+                    //'br.com.domain.application'
+            ]
+        }
+    }
+}
+
+jacocoTestCoverageVerification.mustRunAfter jacocoTestReport
